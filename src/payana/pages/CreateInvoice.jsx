@@ -197,17 +197,18 @@ const CreateInvoice = ({ onNavigate, userProfile, selectedCompany }) => {
 
       toast.success('Invoice saved successfully!');
 
-      toast.loading('Generating and uploading PDF...', { id: 'pdf-process' });
-      const pdfResult = await generateAndUploadPDF(formData);
-
-      if (pdfResult.success) {
-        toast.success('PDF generated and uploaded successfully!', { id: 'pdf-process' });
-        setTimeout(() => {
-          onNavigate('payanaInvoice');
-        }, 1500);
-      } else {
-        toast.error(`PDF generation warning: ${pdfResult.error}`, { id: 'pdf-process' });
+      try {
+        const pdfResult = await generateAndUploadPDF(formData);
+        if (pdfResult.success) {
+          console.log('✅ PDF generated and stored:', pdfResult.pdfUrl);
+        }
+      } catch (pdfErr) {
+        console.warn('PDF storage info:', pdfErr);
       }
+
+      setTimeout(() => {
+        onNavigate('payanaInvoice');
+      }, 1000);
 
     } catch (error) {
       console.error('❌ Error saving invoice:', error);
